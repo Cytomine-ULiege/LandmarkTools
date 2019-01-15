@@ -459,6 +459,7 @@ def build_dataset_image( IM, wp, x_v, y_v, feature_type, feature_parameters, dep
 		
 		X = [[int(x*depths[z]) for x in x_v] for z in range(ndepths)]
 		Y = [[int(y*depths[z]) for y in y_v] for z in range(ndepths)]
+
 		cub = np.zeros((ndepths,dwp,dwp))
 	
 		for j in range(ndata):
@@ -487,8 +488,8 @@ def build_dataset_image( IM, wp, x_v, y_v, feature_type, feature_parameters, dep
 		cub = np.zeros((ndepths,dwp,dwp))
 	
 		for j in range(ndata):
-			x = x_v[j]		
-			y = y_v[j]
+			x = int(x_v[j])
+			y = int(y_v[j])
 			for z in range(ndepths):
 				im = images[z]
 				cub[z,:,:] = im[Y[z][j]:Y[z][j]+dwp,X[z][j]:X[z][j]+dwp]-IM[y,x]
