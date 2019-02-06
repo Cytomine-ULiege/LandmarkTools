@@ -167,6 +167,8 @@ def readimage(repository,idimage,image_type='jpg'):
 		IM = rgb2gray(imageio.imread('%s%d.bmp'%(repository,idimage)))
 	elif(image_type=='jpg'):
 		IM = rgb2gray(imageio.imread('%s%d.jpg'%(repository,idimage)))
+	elif(image_type=='tif'):
+		IM = rgb2gray(imageio.imread('%s%d.tif'%(repository,idimage)))
 	IM = np.double(IM)
 	IM = IM-np.mean(IM)
 	IM = IM/np.std(IM)
@@ -468,6 +470,7 @@ def build_dataset_image( IM, wp, x_v, y_v, feature_type, feature_parameters, dep
 			for z in range(ndepths):
 				im = images[z]
 				cub[z,:,:] = im[Y[z][j]:Y[z][j]+dwp,X[z][j]:X[z][j]+dwp]
+				cub[z,:,:] = im[Y[z][j]:Y[z][j]+dwp,X[z][j]:X[z][j]+dwp] - IM[y, x]
 			DATASET[j,:] = cub.flatten()
 		return DATASET
 
