@@ -728,3 +728,125 @@ def build_datasets_rot_mp(repository,imc,Xc,Yc,R,RMAX,proportion,step,ang,window
 
 def str2bool(v):
 	return v.lower() in ("yes", "true", "t", "1")
+
+def pad_integral(intg):
+	(h,w) = intg.shape
+	nintg = np.zeros((h+1,w+1))
+	nintg[1:,1:]=intg
+	return nintg
+
+def compute_features(intg, x, y, coords_h2, coords_v2, coords_h3, coords_v3, coords_sq):
+	pad_intg = pad_integral(intg)
+	x = x + 1
+	y = y + 1
+	(h, w) = pad_intg.shape
+	h -= 1
+	w -= 1
+
+	(n_h2, quatre) = coords_h2.shape
+	(n_v2, quatre) = coords_v2.shape
+	(n_h3, quatre) = coords_h3.shape
+	(n_v3, quatre) = coords_v3.shape
+	(n_sq, quatre) = coords_sq.shape
+
+	ndata = x.size
+	coords = np.zeros((ndata, 4))
+	dataset = np.zeros((ndata, n_h2 + n_v2 + n_h3 + n_v3 + n_sq))
+	feature_index = 0
+
+	for i in range(n_h2):
+		coords[:, 0] = (x + coords_h2[i, 0])
+		coords[:, 1] = (y + coords_h2[i, 1])
+		coords[:, 2] = (x + coords_h2[i, 2])
+		coords[:, 3] = (y + coords_h2[i, 3])
+		(xc, yc) = generate_2d_coordinates_horizontal(coords)
+		xc = xc.clip(min=0, max=w)
+		yc = yc.clip(min=0, max=h)
+		zero = pad_intg[yc[:, 0], xc[:, 0]]
+		un = pad_intg[yc[:, 1], xc[:, 1]]
+		deux = pad_intg[yc[:, 2], xc[:, 2]]
+		trois = pad_intg[yc[:, 3], xc[:, 3]]
+		quatre = pad_intg[yc[:, 4], xc[:, 4]]
+		cinq = pad_intg[yc[:, 5], xc[:, 5]]
+		dataset[:, feature_index] = zero + (2 * un) + (-deux) + trois + (-2 * quatre) + cinq
+		feature_index += 1
+
+	for i in range(n_v2):
+		coords[:, 0] = x + coords_v2[i, 0]
+		coords[:, 1] = y + coords_v2[i, 1]
+		coords[:, 2] = x + coords_v2[i, 2]
+		coords[:, 3] = y + coords_v2[i, 3]
+		(xc, yc) = generate_2d_coordinates_vertical(coords)
+		xc = xc.clip(min=0, max=w)
+		yc = yc.clip(min=0, max=h)
+		zero = pad_intg[yc[:, 0], xc[:, 0]]
+		un = pad_intg[yc[:, 1], xc[:, 1]]
+		deux = pad_intg[yc[:, 2], xc[:, 2]]
+		trois = pad_intg[yc[:, 3], xc[:, 3]]
+		quatre = pad_intg[yc[:, 4], xc[:, 4]]
+		cinq = pad_intg[yc[:, 5], xc[:, 5]]
+		dataset[:, feature_index] = zero + (-un) + (-2 * deux) + (2 * trois) + quatre - cinq
+		feature_index += 1
+
+	for i in range(n_h3):
+		coords[:, 0] = x + coords_h3[i, 0]
+		coords[:, 1] = y + coords_h3[i, 1]
+		coords[:, 2] = x + coords_h3[i, 2]
+		coords[:, 3] = y + coords_h3[i, 3]
+		(xc, yc) = generate_3d_coordinates_horizontal(coords)
+		xc = xc.clip(min=0, max=w)
+		yc = yc.clip(min=0, max=h)
+		zero = pad_intg[yc[:, 0], xc[:, 0]]
+		un = pad_intg[yc[:, 1], xc[:, 1]]
+		deux = pad_intg[yc[:, 2], xc[:, 2]]
+		trois = pad_intg[yc[:, 3], xc[:, 3]]
+		quatre = pad_intg[yc[:, 4], xc[:, 4]]
+		cinq = pad_intg[yc[:, 5], xc[:, 5]]
+		six = pad_intg[yc[:, 6], xc[:, 6]]
+		sept = pad_intg[yc[:, 7], xc[:, 7]]
+		dataset[:, feature_index] = zero + (-2 * un) + (2 * deux) + (-trois) + (-quatre) + (2 * cinq) + (
+					-2 * six) + sept
+		feature_index += 1
+
+	for i in range(n_v3):
+		coords[:, 0] = x + coords_v3[i, 0]
+		coords[:, 1] = y + coords_v3[i, 1]
+		coords[:, 2] = x + coords_v3[i, 2]
+		coords[:, 3] = y + coords_v3[i, 3]
+		(xc, yc) = generate_3d_coordinates_vertical(coords)
+		xc = xc.clip(min=0, max=w)
+		yc = yc.clip(min=0, max=h)
+		zero = pad_intg[yc[:, 0], xc[:, 0]]
+		un = pad_intg[yc[:, 1], xc[:, 1]]
+		deux = pad_intg[yc[:, 2], xc[:, 2]]
+		trois = pad_intg[yc[:, 3], xc[:, 3]]
+		quatre = pad_intg[yc[:, 4], xc[:, 4]]
+		cinq = pad_intg[yc[:, 5], xc[:, 5]]
+		six = pad_intg[yc[:, 6], xc[:, 6]]
+		sept = pad_intg[yc[:, 7], xc[:, 7]]
+		dataset[:, feature_index] = zero + (-un) + (-2 * deux) + (2 * trois) + (2 * quatre) + (-2 * cinq) + (
+			-six) + sept
+		feature_index += 1
+
+	for i in range(n_sq):
+		coords[:, 0] = x + coords_sq[i, 0]
+		coords[:, 1] = y + coords_sq[i, 1]
+		coords[:, 2] = x + coords_sq[i, 2]
+		coords[:, 3] = y + coords_sq[i, 3]
+		(xc, yc) = generate_square_coordinates(coords)
+		xc = xc.clip(min=0, max=w)
+		yc = yc.clip(min=0, max=h)
+		zero = pad_intg[yc[:, 0], xc[:, 0]]
+		un = pad_intg[yc[:, 1], xc[:, 1]]
+		deux = pad_intg[yc[:, 2], xc[:, 2]]
+		trois = pad_intg[yc[:, 3], xc[:, 3]]
+		quatre = pad_intg[yc[:, 4], xc[:, 4]]
+		cinq = pad_intg[yc[:, 5], xc[:, 5]]
+		six = pad_intg[yc[:, 6], xc[:, 6]]
+		sept = pad_intg[yc[:, 7], xc[:, 7]]
+		huit = pad_intg[yc[:, 8], xc[:, 8]]
+		dataset[:, feature_index] = zero + (-2 * un) + deux + (-2 * trois) + (4 * quatre) + (-2 * cinq) + six + (
+					-2 * sept) + huit
+		feature_index += 1
+
+	return dataset
