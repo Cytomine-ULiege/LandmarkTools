@@ -27,6 +27,7 @@ import scipy.ndimage as snd
 from multiprocessing import Pool
 import os
 import joblib
+from sklearn.tree import ExtraTreeClassifier, ExtraTreeRegressor
 
 """
 This function extracts the coordinates of a given term from an offline

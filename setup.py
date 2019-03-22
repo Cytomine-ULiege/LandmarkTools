@@ -21,7 +21,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='LandmarkTools',
-    version='0.0.4',
+    version='0.0.4b',
     description='Tools for the Landmark Detection algorithms.',
     long_description=long_description,
     long_description_content_type="text/markdown",
